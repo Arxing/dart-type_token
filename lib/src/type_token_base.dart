@@ -7,7 +7,7 @@ class TypeToken {
   }
 
   TypeToken.ofName2(String typeName, [List<Type> generics = const []])
-    : this.ofName(typeName, generics.map((o) => TypeToken.of(o)).toList());
+      : this.ofName(typeName, generics.map((o) => TypeToken.of(o)).toList());
 
   factory TypeToken.ofFullName(String fullTypeName) {
     String typeName = resolveTypeName(fullTypeName);
@@ -83,15 +83,40 @@ class TypeToken {
 
   TypeToken get firstGeneric => generics.first;
 
+  TypeToken get secondGeneric => generics[1];
+
+  bool get hasGeneric => generics.isNotEmpty;
+
+  bool get isNativeType {
+    try {
+      nativeType;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Type get nativeType {
+    if (isInt) return int;
+    if (isDouble) return double;
+    if (isBool) return bool;
+    if (isString) return String;
+    if (isList) return List;
+    if (isMap) return Map;
+    throw "this TypeToken is not native type: $fullTypeName";
+  }
+
   @override
   bool operator ==(Object other) =>
-    identical(this, other) || other is TypeToken && runtimeType == other.runtimeType && _typeName == other._typeName;
+      identical(this, other) || other is TypeToken && runtimeType == other.runtimeType && _typeName == other._typeName;
 
   @override
   int get hashCode => _typeName.hashCode;
 
   @override
   String toString() => fullTypeName;
+
+  TypeToken operator [](int index) => generics[index];
 }
 
 bool isPrimitive(Type type) => TypeToken.of(type).isPrimitive;
@@ -141,11 +166,22 @@ Iterable<String> _splitGenerics(String genericsString) sync* {
   } else {
     genericsString = genericsString.replaceAll(" ", "");
     String tmp = "";
+    bool output = true;
     for (var idx = 0; idx < genericsString.length; idx++) {
       String s = genericsString[idx];
       if (s == ",") {
-        yield tmp;
-        tmp = "";
+        if (output) {
+          yield tmp;
+          tmp = "";
+        } else {
+          tmp += s;
+        }
+      } else if (s == "<") {
+        output = false;
+        tmp += s;
+      } else if (s == ">") {
+        output = true;
+        tmp += s;
       } else {
         tmp += s;
       }
@@ -153,4 +189,3 @@ Iterable<String> _splitGenerics(String genericsString) sync* {
     yield tmp;
   }
 }
-

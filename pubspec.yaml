@@ -1,6 +1,7 @@
 name: type_token
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: >-
+  Extend on dart `Type` for more helpful function.
+version: 1.0.4
 homepage: https://github.com/Arxing/dart-type_token
 author: Arxing <meiswind711108@gmail.com>
 pubpage: https://pub.dev/packages/type_token
