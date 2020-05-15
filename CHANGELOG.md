@@ -9,3 +9,5 @@
 ## 1.0.4
 
 - bug fixed and update readme
+
+## 1.0.5
